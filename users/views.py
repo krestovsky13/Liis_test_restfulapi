@@ -4,6 +4,7 @@ from rest_framework.generics import CreateAPIView
 from rest_framework.permissions import AllowAny
 from .models import User
 from .serializers import UserRegistrSerializer
+from django.contrib.auth import login
 
 
 class RegistrUserView(CreateAPIView):
@@ -15,8 +16,9 @@ class RegistrUserView(CreateAPIView):
         serializer = UserRegistrSerializer(data=request.data)
         data = {}
         if serializer.is_valid():
-            serializer.save()
+            user = serializer.save()
             data['response'] = True
+            login(request, user)
             return Response(data, status=status.HTTP_200_OK)
         else:
             data = serializer.errors
